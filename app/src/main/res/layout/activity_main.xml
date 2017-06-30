@@ -5,7 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.a279.siemens.mydiary.MainActivity">
+    tools:context="com.a279.siemens.mydiary.MainActivity"
+    android:id="@+id/drawerlayout"
+    android:fitsSystemWindows="false">
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -19,7 +21,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:id="@+id/toolbar"
-                android:background="@color/colorPrimary">
+                android:background="@color/colorPrimary"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark">
             </android.support.v7.widget.Toolbar>
 
         </android.support.design.widget.AppBarLayout>
