@@ -8,8 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name" />
+        android:hint="Тема"
+        android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/editTextText"
@@ -22,7 +22,7 @@
         android:id="@+id/textViewDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:gravity="center_horizontal" />
 
     <Button
         android:id="@+id/button"
