@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.a279.siemens.mydiary.fragments.f_add_item;
+import com.a279.siemens.mydiary.fragments.f_show_oll;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initToolbar();
         initNavigationDraver();
+        setFragment(f_show_oll.class, null);
     }
 
     @Override
