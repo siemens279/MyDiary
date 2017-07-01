@@ -2,6 +2,7 @@ package com.a279.siemens.mydiary.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -23,6 +24,7 @@ public class f_add_item extends Fragment {
     TextView tvDate;
     Button bAdd;
     MyDBHelper db;
+    FloatingActionButton fab;
 
     @Nullable
     @Override
@@ -33,6 +35,7 @@ public class f_add_item extends Fragment {
         etText = (EditText) view.findViewById(R.id.editTextText);
         tvDate = (TextView) view.findViewById(R.id.textViewDate);
         bAdd = (Button) view.findViewById(R.id.button);
+        fab = (FloatingActionButton) view.findViewById(R.id.fab);
 
         Bundle bundle = getArguments();
         if (bundle != null) {
@@ -41,6 +44,8 @@ public class f_add_item extends Fragment {
             etText.setText(recieveDiar.getText());
             tvDate.setText(recieveDiar.getDate());
             bAdd.setVisibility(View.GONE);
+            //fab.setImageDrawable(getResources().getDrawable(R.mipmap.ic_pencil));
+            fab.setVisibility(View.VISIBLE);
         }
 
 

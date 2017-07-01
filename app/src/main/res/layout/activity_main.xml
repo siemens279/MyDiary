@@ -41,7 +41,8 @@
             android:layout_gravity="bottom|end"
             android:layout_marginBottom="@dimen/fab_margin"
             android:layout_marginRight="@dimen/fab_margin"
-            android:src="@mipmap/ic_pencil" />
+            android:src="@mipmap/ic_pencil"
+            android:visibility="invisible" />
 
     </android.support.design.widget.CoordinatorLayout>
 
