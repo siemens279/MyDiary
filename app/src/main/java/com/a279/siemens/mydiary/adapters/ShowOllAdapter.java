@@ -20,11 +20,12 @@ public class ShowOllAdapter extends RecyclerView.Adapter<ShowOllAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvTema, tvText;
+        public TextView tvTema, tvText, tvDate;
         public ViewHolder(View v) {
             super(v);
             tvTema = (TextView) v.findViewById(R.id.textViewTemaItem);
             tvText = (TextView) v.findViewById(R.id.textViewTextItem);
+            tvDate = (TextView) v.findViewById(R.id.textViewDateItem);
         }
     }
 
@@ -47,7 +48,7 @@ public class ShowOllAdapter extends RecyclerView.Adapter<ShowOllAdapter.ViewHold
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.tvTema.setText(diarList.get(position).tema);
         holder.tvText.setText(diarList.get(position).text);
-
+        holder.tvDate.setText(diarList.get(position).date);
 //        holder.name.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
