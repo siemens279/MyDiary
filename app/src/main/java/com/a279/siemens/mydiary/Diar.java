@@ -1,8 +1,9 @@
 package com.a279.siemens.mydiary;
 
+import java.io.Serializable;
 import java.sql.Date;
 
-public class Diar {
+public class Diar implements Serializable {
 
     public Integer id;
     public String tema;

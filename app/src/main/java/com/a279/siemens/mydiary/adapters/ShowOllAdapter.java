@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.a279.siemens.mydiary.Diar;
 import com.a279.siemens.mydiary.R;
@@ -21,11 +22,13 @@ public class ShowOllAdapter extends RecyclerView.Adapter<ShowOllAdapter.ViewHold
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView tvTema, tvText, tvDate;
+        LinearLayout ll;
         public ViewHolder(View v) {
             super(v);
             tvTema = (TextView) v.findViewById(R.id.textViewTemaItem);
             tvText = (TextView) v.findViewById(R.id.textViewTextItem);
             tvDate = (TextView) v.findViewById(R.id.textViewDateItem);
+            ll = (LinearLayout) v.findViewById(R.id.linearLayoutItem);
         }
     }
 
@@ -49,13 +52,12 @@ public class ShowOllAdapter extends RecyclerView.Adapter<ShowOllAdapter.ViewHold
         holder.tvTema.setText(diarList.get(position).tema);
         holder.tvText.setText(diarList.get(position).text);
         holder.tvDate.setText(diarList.get(position).date);
-//        holder.name.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mOnItemClickListener.onItemClick(v, position);
-//            }
-//        });
-
+        holder.ll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnItemClickListener.onItemClick(v, position);
+            }
+        });
     }
 
     // Возвращает размер данных (вызывается layout manager-ом)

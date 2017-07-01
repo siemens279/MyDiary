@@ -34,6 +34,16 @@ public class f_add_item extends Fragment {
         tvDate = (TextView) view.findViewById(R.id.textViewDate);
         bAdd = (Button) view.findViewById(R.id.button);
 
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            Diar recieveDiar = (Diar) bundle.getSerializable("diar");
+            etTema.setText(recieveDiar.getTema());
+            etText.setText(recieveDiar.getText());
+            tvDate.setText(recieveDiar.getDate());
+            bAdd.setVisibility(View.GONE);
+        }
+
+
         bAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
