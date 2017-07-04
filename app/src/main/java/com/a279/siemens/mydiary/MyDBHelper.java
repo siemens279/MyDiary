@@ -5,6 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import java.sql.Date;
 import java.util.ArrayList;
 
 public class MyDBHelper extends SQLiteOpenHelper {
@@ -36,7 +39,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
         //Log.d("MyLog", "Restart BD");
         onCreate(sqLiteDatabase);
     }
-    public void addDiary(Diar diar) {
+    public void addDiar(Diar diar) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_ID, diar.getId());
@@ -57,13 +60,15 @@ public class MyDBHelper extends SQLiteOpenHelper {
     }
     public ArrayList<Diar> getAllDiar() {
         ArrayList<Diar> drugList = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_DIARY;
+        String selectQuery = "SELECT * FROM "+TABLE_DIARY+" ORDER BY ids DESC"; //DESC
+        Log.d("MyLog", ""+selectQuery);
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
             do {
                 Diar diar = new Diar();
                 diar.setId(cursor.getInt(0));
+                Log.d("MyLog", ""+cursor.getInt(0));
                 diar.setTema(cursor.getString(1));
                 diar.setText(cursor.getString(2));
                 diar.setDate(cursor.getString(3));
@@ -109,8 +114,8 @@ public class MyDBHelper extends SQLiteOpenHelper {
         db.close();
         return diarList;
     }
-    public Boolean findDiarById(String id) {
-        String selectQuery = "SELECT * FROM " +TABLE_DIARY +" WHERE "+KEY_ID+" LIKE '%"+id+"%' ORDER BY 'name' ASC"; //+ clients WHERE client_data LIKE '%Mark%' ORDER BY `client_id` ASC
+    public Boolean findDiarById(Integer id) {
+        String selectQuery = "SELECT * FROM " +TABLE_DIARY +" WHERE "+KEY_ID+" = "+id; //+" ORDER BY name ASC"; //+ clients WHERE client_data LIKE '%Mark%' ORDER BY `client_id` ASC
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
@@ -122,6 +127,29 @@ public class MyDBHelper extends SQLiteOpenHelper {
             return false;
         }
     }
+    public Integer updateDiarById(Diar diar) {
+        //String selectQuery = "SELECT * FROM " +TABLE_DIARY +" WHERE "+KEY_ID+" LIKE '%"+id+"%' ORDER BY 'name' ASC"; //+ clients WHERE client_data LIKE '%Mark%' ORDER BY `client_id` AS
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues data = new ContentValues();
+        data.put("ids", diar.getId());
+        data.put("tema", diar.getTema());
+        data.put("text", diar.getText());
+        data.put("date", diar.getDate());
+        Integer b = db.update(TABLE_DIARY, data, KEY_ID+"=" + diar.getId(), null);
+        db.close();
+        /*Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            db.close();
+            return true;
+        }
+        else {
+            db.close();
+            return false;
+        }*/
+        return b;
+    }
+
     public void deleteAllBd() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_DIARY, null, null);

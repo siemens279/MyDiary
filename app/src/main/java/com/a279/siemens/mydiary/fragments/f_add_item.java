@@ -27,15 +27,17 @@ import com.a279.siemens.mydiary.MainActivity;
 import com.a279.siemens.mydiary.MyDBHelper;
 import com.a279.siemens.mydiary.R;
 
+import java.text.SimpleDateFormat;
+
 public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListener {
 
     EditText etTema, etText;
     TextView tvDate;
-    Button bAdd;
     MyDBHelper db;
     FloatingActionButton fab;
     Boolean action = true;
     MenuItem addMenuItem, saveMenuItem, settingsMenuItem;
+    Diar recieveDiar = null;
 
     @Nullable
     @Override
@@ -45,33 +47,18 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
         etTema = (EditText) view.findViewById(R.id.editTextTema);
         etText = (EditText) view.findViewById(R.id.editTextText);
         tvDate = (TextView) view.findViewById(R.id.textViewDate);
-        bAdd = (Button) view.findViewById(R.id.button);
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
 
         Bundle bundle = getArguments();
         if (bundle != null) {
-            Diar recieveDiar = (Diar) bundle.getSerializable("diar");
+            recieveDiar = (Diar) bundle.getSerializable("diar");
             etTema.setText(recieveDiar.getTema());
             etText.setText(recieveDiar.getText());
-            tvDate.setText(recieveDiar.getDate());
-            bAdd.setVisibility(View.GONE);
+            tvDate.setText(formatDate(Long.parseLong(recieveDiar.getDate())));
             fab.setImageDrawable(getResources().getDrawable(R.mipmap.ic_pencil));
             fab.setVisibility(View.VISIBLE);
-            action = false;
-        }
-
-        bAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Diar diar = new Diar();
-                diar.setTema(etTema.getText().toString());
-                diar.setText(etText.getText().toString());
-                diar.setDate(String.valueOf(System.currentTimeMillis()));
-                db.addDiary(diar);
-                //Toast.makeText(getContext(), "Size:"+db.getCountDiar(), Toast.LENGTH_SHORT).show();
-                setFragment(f_show_oll.class, null);
-            }
-        });
+            //action = false;
+        } else tvDate.setText(formatDate(System.currentTimeMillis()));
 
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -87,6 +74,7 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
 
         return view;
     }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
@@ -97,7 +85,33 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
         addMenuItem.setVisible(false);
         super.onCreateOptionsMenu(menu, inflater);
     }
-
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.mSave:
+                Diar diar = new Diar();
+                diar.setTema(etTema.getText().toString());
+                diar.setText(etText.getText().toString());
+                diar.setDate(String.valueOf(System.currentTimeMillis()));
+                if (recieveDiar!=null) {
+                    if(db.findDiarById(recieveDiar.getId())) {
+                        diar.setId(recieveDiar.getId());
+                        db.updateDiarById(diar);
+                        setFragment(f_show_oll.class, null);
+                        Toast.makeText(getContext(), "Запись обновлена", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    db.addDiar(diar);
+                    setFragment(f_show_oll.class, null);
+                    Toast.makeText(getContext(), "Запись сохранена", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            case R.id.mSettings:
+                setFragment(f_settings.class, null);
+                return true;
+        }
+        return false;
+    }
     public void setFragment(Class clas, Bundle bundle) {
         Fragment fragment = null;
         try {
@@ -115,17 +129,8 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
             transaction.commit();
         }
     }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        switch(item.getItemId()){
-            case R.id.mSave:
-                Log.d("MyLog", "----mSave-----");
-                return true;
-            case R.id.mSettings:
-                Log.d("MyLog", "----mSettings----");
-                return true;
-        }
-        return false;
+    public String formatDate(long l) {
+        SimpleDateFormat form = new SimpleDateFormat("dd.MM.yyyy kk:mm");
+        return form.format(l);
     }
 }

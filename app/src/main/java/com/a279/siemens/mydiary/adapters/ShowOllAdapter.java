@@ -9,6 +9,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.a279.siemens.mydiary.Diar;
 import com.a279.siemens.mydiary.R;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class ShowOllAdapter extends RecyclerView.Adapter<ShowOllAdapter.ViewHolder> {
@@ -51,7 +53,7 @@ public class ShowOllAdapter extends RecyclerView.Adapter<ShowOllAdapter.ViewHold
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.tvTema.setText(diarList.get(position).tema);
         holder.tvText.setText(diarList.get(position).text);
-        holder.tvDate.setText(diarList.get(position).date);
+        holder.tvDate.setText(formatDate(Long.parseLong(diarList.get(position).date)));
         holder.ll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,5 +77,9 @@ public class ShowOllAdapter extends RecyclerView.Adapter<ShowOllAdapter.ViewHold
         notifyDataSetChanged();
     }
 
+    public String formatDate(long l) {
+        SimpleDateFormat form = new SimpleDateFormat("dd.MM.yyyy kk:mm");
+        return form.format(l);
+    }
 
 }
