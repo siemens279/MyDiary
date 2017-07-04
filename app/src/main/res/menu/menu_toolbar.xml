@@ -5,6 +5,10 @@
         android:icon="@mipmap/ic_plus"
         android:title="Add"
         app:showAsAction="always"/>
+    <item android:id="@+id/mSave"
+        android:icon="@mipmap/ic_check"
+        android:title="Save"
+        app:showAsAction="always"/>
     <item android:id="@+id/mSettings"
         android:icon="@mipmap/ic_settings"
         android:title="Settings"

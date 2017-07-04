@@ -1,64 +1,128 @@
 package com.a279.siemens.mydiary;
 
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Display;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.a279.siemens.mydiary.fragments.f_add_item;
 import com.a279.siemens.mydiary.fragments.f_show_oll;
 
+import static com.a279.siemens.mydiary.R.id.fab;
+import static com.a279.siemens.mydiary.R.id.toolbar;
+
 public class MainActivity extends AppCompatActivity {
 
     Toolbar toolbar;
+    DrawerLayout dl;
+    public static enum Mode {
+        f_add_item, f_show_oll;
+    }
+    //public static Mode mode;
+    Menu menu;
+    private MenuItem addMenuItem;
+    private MenuItem saveMenuItem;
+    private MenuItem settingsMenuItem;
+    long back_pressed = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initToolbar();
-        initNavigationDraver();
-        setFragment(f_show_oll.class, null);
+        //initToolbar();
+        //initNavigationDraver();
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("MyDiary");
+        //toolbar.inflateMenu(R.menu.menu_toolbar);
+        //menu = toolbar.getMenu();
+        //addMenuItem = menu.findItem(R.id.mAdd);
+        //saveMenuItem = menu.findItem(R.id.mSave);
+        //settingsMenuItem = menu.findItem(R.id.mSettings);
+        setSupportActionBar(toolbar);
+
+        dl = (DrawerLayout) findViewById(R.id.drawerlayout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, dl, toolbar, R.string.nav_open, R.string.nav_close);
+        dl.setDrawerListener(toggle);
+        toggle.syncState();
+
+        setFragment(f_show_oll.class, null, Mode.f_show_oll);
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        String[] array = {"f_add_item","f_show_oll"};
+        if (dl.isDrawerOpen(GravityCompat.START)) {
+            dl.closeDrawer(GravityCompat.START);
+        } else {
+            Fragment main = getSupportFragmentManager().findFragmentByTag("f_show_oll");
+            if (main.isVisible()) {
+                if (back_pressed + 2000 > System.currentTimeMillis()) finish();
+                else {
+                    Toast.makeText(getBaseContext(), "Нажмите еще раз чтобы выйти", Toast.LENGTH_SHORT).show();
+                    back_pressed = System.currentTimeMillis();
+                }
+            } else {
+                super.onBackPressed();
+                for (int i = 0; i < array.length; i++) {
+                    Fragment frag = getSupportFragmentManager().findFragmentByTag(array[i]);
+                    if (frag != null) {
+                        switch (array[i]) {
+                            case "f_add_item":
+                                //startMode(Mode.f_add_item);
+                                //Log.d("MyLog", "f_add_item");
+                                break;
+                            case "f_show_oll":
+                                //startMode(Mode.f_show_oll);
+                                //Log.d("MyLog", "f_show_oll");
+                                break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    private void initNavigationDraver() {
-        DrawerLayout dl = (DrawerLayout) findViewById(R.id.drawerlayout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, dl, toolbar, R.string.nav_open, R.string.nav_close);
-        dl.setDrawerListener(toggle);
-        toggle.syncState();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.mAdd:
+                 //Toast.makeText(MainActivity.this, "Add", Toast.LENGTH_SHORT).show();
+                 setFragment(f_add_item.class, null, Mode.f_add_item);
+                 return true;
+            case R.id.mSave:
+                 Toast.makeText(MainActivity.this, "Save", Toast.LENGTH_SHORT).show();
+                 return true;
+            case R.id.mSettings:
+                 Toast.makeText(MainActivity.this, "Settings", Toast.LENGTH_SHORT).show();
+                 return true;
+        }
+        return false;
     }
-    private void initToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.mAdd:
-                        //Toast.makeText(MainActivity.this, "Add", Toast.LENGTH_SHORT).show();
-                        setFragment(f_add_item.class, null);
-                        break;
-                    case R.id.mSettings:
-                        Toast.makeText(MainActivity.this, "Settings", Toast.LENGTH_SHORT).show();
-                        break;
-                }
-                return false;
-            }
-        });
-        toolbar.inflateMenu(R.menu.menu_toolbar);
-        toolbar.setTitle("MyDiary");
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
+        addMenuItem = menu.findItem(R.id.mAdd);
+        saveMenuItem = menu.findItem(R.id.mSave);
+        settingsMenuItem = menu.findItem(R.id.mSettings);
+        addMenuItem.setVisible(true);
+        saveMenuItem.setVisible(false);
+        settingsMenuItem.setVisible(true);
+        return true;
     }
-    public void setFragment(Class clas, Bundle bundle) {
-        //Class fragmentClass = clas;
+
+    public void setFragment(Class clas, Bundle bundle, Mode mod) {
         Fragment fragment = null;
         try {
             fragment = (Fragment) clas.newInstance();
@@ -69,10 +133,24 @@ public class MainActivity extends AppCompatActivity {
             fragment.setArguments(bundle);
         }
         if (fragment!=null) {
+            //startMode(mod);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.container, fragment);
+            transaction.replace(R.id.container, fragment, clas.getSimpleName());
             transaction.addToBackStack(null);
             transaction.commit();
         }
     }
+
+    private void startMode(Mode modeToStart) {
+        if (modeToStart == Mode.f_show_oll) {
+            addMenuItem.setVisible(true);
+            saveMenuItem.setVisible(false);
+            settingsMenuItem.setVisible(true);
+        } else if (modeToStart == Mode.f_add_item) {
+            addMenuItem.setVisible(false);
+            saveMenuItem.setVisible(true);
+            settingsMenuItem.setVisible(true);
+        }
+    }
+
 }
