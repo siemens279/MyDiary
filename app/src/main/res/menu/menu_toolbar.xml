@@ -9,8 +9,12 @@
         android:icon="@mipmap/ic_check"
         android:title="Save"
         app:showAsAction="always"/>
+    <item android:id="@+id/mDelete"
+        android:icon="@mipmap/ic_delete_forever"
+        android:title="Delete"
+        app:showAsAction="always"/>
     <item android:id="@+id/mSettings"
         android:icon="@mipmap/ic_settings"
         android:title="Settings"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 </menu>
