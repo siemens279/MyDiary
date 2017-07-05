@@ -44,13 +44,7 @@ public class MainActivity extends AppCompatActivity {
         //saveMenuItem = menu.findItem(R.id.mSave);
         //settingsMenuItem = menu.findItem(R.id.mSettings);
         setSupportActionBar(toolbar);
-
-//        dl = (DrawerLayout) findViewById(R.id.drawerlayout);
-//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, dl, toolbar, R.string.nav_open, R.string.nav_close);
-//        dl.setDrawerListener(toggle);
-//        toggle.syncState();
         togle();
-
         setFragment(f_show_oll.class, null);
     }
     public void togle() {
