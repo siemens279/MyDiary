@@ -73,10 +73,8 @@ public class MainActivity extends AppCompatActivity {
                     if (frag != null) {
                         switch (array[i]) {
                             case "f_add_item":
-                                //Log.d("MyLog", "f_add_item");
                                 break;
                             case "f_show_oll":
-                                //Log.d("MyLog", "f_show_oll");
                                 setSupportActionBar(toolbar);
                                 togle();
                                 break;
