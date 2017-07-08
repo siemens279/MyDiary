@@ -1,5 +1,6 @@
 package com.a279.siemens.mydiary;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +23,7 @@ import android.widget.Toast;
 import com.a279.siemens.mydiary.fragments.f_add_item;
 import com.a279.siemens.mydiary.fragments.f_settings;
 import com.a279.siemens.mydiary.fragments.f_show_oll;
+import com.a279.siemens.mydiary.fragments.f_sign_in;
 
 import static com.a279.siemens.mydiary.R.id.fab;
 import static com.a279.siemens.mydiary.R.id.toolbar;
@@ -51,9 +54,6 @@ public class MainActivity extends AppCompatActivity {
         togle();
         setFragment(f_show_oll.class, null);
 
-
-        tvIn = (TextView) findViewById(R.id.textViewIn);
-
         NavigationView nv = (NavigationView) findViewById(R.id.navigation);
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -62,13 +62,23 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.nAccaunt:
                         //Toast.makeText(MainActivity.this, "++++"+tvIn.getText().toString(), Toast.LENGTH_SHORT).show();
-                        Log.d("MyLog", "++++"+tvIn.getText().toString());
-                        setFragment(f_settings.class, null);
+                        //Log.d("MyLog", "++++"+tvIn.getText().toString());
+                        //setFragment(f_settings.class, null);
+                        break;
                 }
                 return true;
             }
         });
 
+        View header = nv.getHeaderView(0);
+        TextView text = (TextView) header.findViewById(R.id.textViewIn);
+        text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dl.closeDrawers();
+                setFragment(f_sign_in.class, null);
+            }
+        });
 
     }
     public void togle() {
