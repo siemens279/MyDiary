@@ -1,5 +1,6 @@
 package com.a279.siemens.mydiary;
 
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -14,6 +15,7 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.a279.siemens.mydiary.fragments.f_add_item;
@@ -30,7 +32,9 @@ public class MainActivity extends AppCompatActivity {
     private MenuItem addMenuItem;
     private MenuItem saveMenuItem;
     private MenuItem settingsMenuItem;
+    private MenuItem deleteMenuItem;
     long back_pressed = 0;
+    TextView tvIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +50,26 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         togle();
         setFragment(f_show_oll.class, null);
+
+
+        tvIn = (TextView) findViewById(R.id.textViewIn);
+
+        NavigationView nv = (NavigationView) findViewById(R.id.navigation);
+        nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                dl.closeDrawers();
+                switch (item.getItemId()) {
+                    case R.id.nAccaunt:
+                        //Toast.makeText(MainActivity.this, "++++"+tvIn.getText().toString(), Toast.LENGTH_SHORT).show();
+                        Log.d("MyLog", "++++"+tvIn.getText().toString());
+                        setFragment(f_settings.class, null);
+                }
+                return true;
+            }
+        });
+
+
     }
     public void togle() {
         dl = (DrawerLayout) findViewById(R.id.drawerlayout);
@@ -89,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
@@ -113,12 +136,13 @@ public class MainActivity extends AppCompatActivity {
         addMenuItem = menu.findItem(R.id.mAdd);
         saveMenuItem = menu.findItem(R.id.mSave);
         settingsMenuItem = menu.findItem(R.id.mSettings);
+        deleteMenuItem = menu.findItem(R.id.mDelete);
         addMenuItem.setVisible(true);
         saveMenuItem.setVisible(false);
         settingsMenuItem.setVisible(true);
+        deleteMenuItem.setVisible(false);
         return true;
     }
-
     public void setFragment(Class clas, Bundle bundle) {
         Fragment fragment = null;
         try {
@@ -136,5 +160,4 @@ public class MainActivity extends AppCompatActivity {
             transaction.commit();
         }
     }
-
 }

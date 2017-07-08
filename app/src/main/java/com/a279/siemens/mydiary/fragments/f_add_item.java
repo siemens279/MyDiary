@@ -1,5 +1,7 @@
 package com.a279.siemens.mydiary.fragments;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -8,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -36,8 +39,9 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
     MyDBHelper db;
     FloatingActionButton fab;
     Boolean action = true;
-    MenuItem addMenuItem, saveMenuItem, settingsMenuItem;
+    MenuItem addMenuItem, saveMenuItem, settingsMenuItem, deleteMenuItem;
     Diar recieveDiar = null;
+    Bundle bundle;
 
     @Nullable
     @Override
@@ -49,7 +53,7 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
         tvDate = (TextView) view.findViewById(R.id.textViewDate);
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
 
-        Bundle bundle = getArguments();
+        bundle = getArguments();
         if (bundle != null) {
             recieveDiar = (Diar) bundle.getSerializable("diar");
             etTema.setText(recieveDiar.getTema());
@@ -82,7 +86,9 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
         addMenuItem = menu.findItem(R.id.mAdd);
         saveMenuItem = menu.findItem(R.id.mSave);
         settingsMenuItem = menu.findItem(R.id.mSettings);
+        deleteMenuItem = menu.findItem(R.id.mDelete);
         addMenuItem.setVisible(false);
+        if (bundle == null) deleteMenuItem.setVisible(false);
         super.onCreateOptionsMenu(menu, inflater);
     }
     @Override
@@ -108,6 +114,27 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
                 return true;
             case R.id.mSettings:
                 setFragment(f_settings.class, null);
+                return true;
+            case R.id.mDelete:
+                AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
+                b.setTitle("Удаление").setCancelable(true)
+                        .setMessage("Вы действительно хотите удалить эту дапись?")
+                        .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                db.deleteDiar(recieveDiar);
+                                Toast.makeText(getContext(), "Запись удалена", Toast.LENGTH_SHORT).show();
+                                setFragment(f_show_oll.class, null);
+                            }
+                        })
+                        .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        });
+                AlertDialog alert = b.create();
+                alert.show();
                 return true;
         }
         return false;
