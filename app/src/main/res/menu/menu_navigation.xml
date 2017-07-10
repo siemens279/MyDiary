@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-<item android:id="@+id/nAccaunt"
-    android:title="Ukfdyfz"/>
+    <item android:id="@+id/nMain"
+        android:title="Главная"
+        android:icon="@mipmap/ic_comment_text_outline_b"/>
+    <item android:id="@+id/nAdd"
+        android:title="Добавить запись"
+        android:icon="@mipmap/ic_plus"/>
+    <item android:id="@+id/nAccaunt"
+        android:title="Мой аккаунт"
+        android:icon="@mipmap/ic_account_b"/>
+    <item android:id="@+id/nSettings"
+        android:title="Настройки"
+        android:icon="@mipmap/ic_settings"/>
 </menu>

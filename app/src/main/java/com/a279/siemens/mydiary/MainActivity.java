@@ -17,13 +17,17 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.a279.siemens.mydiary.fragments.f_add_item;
+import com.a279.siemens.mydiary.fragments.f_registration;
 import com.a279.siemens.mydiary.fragments.f_settings;
 import com.a279.siemens.mydiary.fragments.f_show_oll;
 import com.a279.siemens.mydiary.fragments.f_sign_in;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import static com.a279.siemens.mydiary.R.id.fab;
 import static com.a279.siemens.mydiary.R.id.toolbar;
@@ -37,7 +41,10 @@ public class MainActivity extends AppCompatActivity {
     private MenuItem settingsMenuItem;
     private MenuItem deleteMenuItem;
     long back_pressed = 0;
-    TextView tvIn;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    LinearLayout llIn, llOut;
+    TextView textSingIn, textRegistration, textInName, textInEmail, textInOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,40 +52,88 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("MyDiary");
-        //toolbar.inflateMenu(R.menu.menu_toolbar);
-        //menu = toolbar.getMenu();
-        //addMenuItem = menu.findItem(R.id.mAdd);
-        //saveMenuItem = menu.findItem(R.id.mSave);
-        //settingsMenuItem = menu.findItem(R.id.mSettings);
         setSupportActionBar(toolbar);
         togle();
         setFragment(f_show_oll.class, null);
 
         NavigationView nv = (NavigationView) findViewById(R.id.navigation);
+//        View header = nv.getHeaderView(0);
+//        llIn = (LinearLayout) header.findViewById(R.id.llSingIn);
+//        textSingIn = (TextView) header.findViewById(R.id.textViewIn);
+//        textRegistration = (TextView) header.findViewById(R.id.textViewReg);
+//        llOut = (LinearLayout) header.findViewById(R.id.llSingOut);
+//        textInName = (TextView) header.findViewById(R.id.textViewOutName);
+//        textInEmail = (TextView) header.findViewById(R.id.textViewOutEmail);
+//        textInOut = (TextView) header.findViewById(R.id.textViewOut);
+        //llIn.setVisibility(View.INVISIBLE);
+        //llOut.setVisibility(View.INVISIBLE);
+
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 dl.closeDrawers();
                 switch (item.getItemId()) {
+                    case R.id.nMain:
+                        setFragment(f_show_oll.class, null);
+                        break;
+                    case R.id.nAdd:
+                        setFragment(f_add_item.class, null);
+                        break;
                     case R.id.nAccaunt:
-                        //Toast.makeText(MainActivity.this, "++++"+tvIn.getText().toString(), Toast.LENGTH_SHORT).show();
-                        //Log.d("MyLog", "++++"+tvIn.getText().toString());
-                        //setFragment(f_settings.class, null);
+                        //setFragment(f_accaunt.class, null);
+                        break;
+                    case R.id.nSettings:
+                        setFragment(f_settings.class, null);
                         break;
                 }
                 return true;
             }
         });
 
-        View header = nv.getHeaderView(0);
-        TextView text = (TextView) header.findViewById(R.id.textViewIn);
-        text.setOnClickListener(new View.OnClickListener() {
+        mAuth = FirebaseAuth.getInstance();
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onClick(View v) {
-                dl.closeDrawers();
-                setFragment(f_sign_in.class, null);
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    //Log.d("MyLog", "onAuthStateChanged:signed_in:" + user.getUid());
+                    //llIn.setVisibility(View.INVISIBLE);
+                    //textInEmail.setText(user.getEmail());
+                } else {
+                    //Log.d("MyLog", "onAuthStateChanged:signed_out");
+                    //llOut.setVisibility(View.INVISIBLE);
+                }
+                // ...
             }
-        });
+        };
+        mAuth.addAuthStateListener(mAuthListener);
+
+
+//        textSingIn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                dl.closeDrawers();
+//                setFragment(f_sign_in.class, null);
+//            }
+//        });
+//        textRegistration.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                dl.closeDrawers();
+//                setFragment(f_registration.class, null);
+//            }
+//        });
+//        textInOut.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                dl.closeDrawers();
+//                //setFragment(f_registration.class, null);
+//                mAuth.signOut();
+//                Toast.makeText(getApplicationContext(), "Вы успешно вышли", Toast.LENGTH_SHORT).show();
+//                llOut.setVisibility(View.INVISIBLE);
+//                llIn.setVisibility(View.VISIBLE);
+//            }
+//        });
 
     }
     public void togle() {

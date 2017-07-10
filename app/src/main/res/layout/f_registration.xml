@@ -9,42 +9,48 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="40dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_margin="20dp"
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/editTextSingEmail"
+            android:id="@+id/editTextNane"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/mWhite"
-            android:ems="10"
+            android:hint="Имя"
+            android:padding="5dp"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/editTextEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@color/mWhite"
             android:hint="Емейл"
             android:inputType="textEmailAddress"
             android:padding="5dp"
             android:textSize="18sp" />
 
         <EditText
-            android:id="@+id/editTextSingPassword"
+            android:id="@+id/editTextPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
             android:background="@color/mWhite"
-            android:ems="10"
             android:hint="Пароль"
             android:inputType="textPassword"
-            android:padding="5dp" />
+            android:padding="5dp"
+            android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/textViewSingIn"
+            android:id="@+id/textViewResistration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:gravity="center_horizontal"
-            android:text="Войти"
+            android:text="Регистрация"
             android:textColor="@color/mWhite"
             android:textSize="24sp" />
     </LinearLayout>
-
 </RelativeLayout>

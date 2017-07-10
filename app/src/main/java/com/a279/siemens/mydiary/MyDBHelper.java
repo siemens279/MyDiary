@@ -61,14 +61,13 @@ public class MyDBHelper extends SQLiteOpenHelper {
     public ArrayList<Diar> getAllDiar() {
         ArrayList<Diar> drugList = new ArrayList<>();
         String selectQuery = "SELECT * FROM "+TABLE_DIARY+" ORDER BY ids DESC"; //DESC
-        Log.d("MyLog", ""+selectQuery);
+        //Log.d("MyLog", ""+selectQuery);
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
             do {
                 Diar diar = new Diar();
                 diar.setId(cursor.getInt(0));
-                Log.d("MyLog", ""+cursor.getInt(0));
                 diar.setTema(cursor.getString(1));
                 diar.setText(cursor.getString(2));
                 diar.setDate(cursor.getString(3));
