@@ -1,5 +1,6 @@
 package com.a279.siemens.mydiary.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,15 +32,18 @@ public class f_sign_in extends Fragment{
 
     private FirebaseAuth mAuth;
     DatabaseReference myRef;
+    DrawerLayout dl;
+    Toolbar toolbar;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.f_sign_in, container, false);
-        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
         setHasOptionsMenu(true);
+        drawableToggle();
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getInstance().getCurrentUser();
@@ -62,25 +67,17 @@ public class f_sign_in extends Fragment{
                                 // the auth state listener will be notified and logic to handle the
                                 // signed in user can be handled in the listener.
                                 Toast.makeText(getContext(), "Авторизация прошла успешно", Toast.LENGTH_SHORT).show();
-
                                 setFragment(f_show_oll.class, null);
                                 if (!task.isSuccessful()) {
                                     //Log.d("MyLog", "signInWithEmail:failed", task.getException());
                                     Toast.makeText(getContext(), "Ошибка авторизации", Toast.LENGTH_SHORT).show();
                                 }
-                                // ...
                             }
                         });
                     } else Toast.makeText(getContext(), "Введите пароль", Toast.LENGTH_SHORT).show();
                 } else Toast.makeText(getContext(), "Введите ваш емейл", Toast.LENGTH_SHORT).show();
             }
         });
-
-        DrawerLayout dl = (DrawerLayout) getActivity().findViewById(R.id.drawerlayout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(getActivity(), dl, toolbar, R.string.nav_open, R.string.nav_close);
-        dl.setDrawerListener(toggle);
-        toggle.syncState();
-
         return view;
     }
     public void setFragment(Class clas, Bundle bundle) {
@@ -99,5 +96,25 @@ public class f_sign_in extends Fragment{
             transaction.addToBackStack(null);
             transaction.commit();
         }
+    }
+    public void drawableToggle() {
+        dl = (DrawerLayout) getActivity().findViewById(R.id.drawerlayout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(getActivity(), dl, toolbar, R.string.nav_open, R.string.nav_close) {
+            @Override
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+            }
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                hideKeyBoard();
+                super.onDrawerOpened(drawerView);
+            }
+        };
+        dl.setDrawerListener(toggle);
+        toggle.syncState();
+    }
+    public void hideKeyBoard() {
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 }

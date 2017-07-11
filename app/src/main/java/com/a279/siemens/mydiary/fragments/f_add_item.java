@@ -1,5 +1,6 @@
 package com.a279.siemens.mydiary.fragments;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -38,10 +40,11 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
     TextView tvDate;
     MyDBHelper db;
     FloatingActionButton fab;
-    Boolean action = true;
     MenuItem addMenuItem, saveMenuItem, settingsMenuItem, deleteMenuItem;
     Diar recieveDiar = null;
     Bundle bundle;
+    DrawerLayout dl;
+    Toolbar toolbar;
 
     @Nullable
     @Override
@@ -53,6 +56,14 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
         tvDate = (TextView) view.findViewById(R.id.textViewDate);
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
 
+        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.setSupportActionBar(toolbar);
+        setHasOptionsMenu(true);
+        toolbar.setTitle("Add");
+        toolbar.setOnMenuItemClickListener(this);
+        drawableToggle();
+
         bundle = getArguments();
         if (bundle != null) {
             recieveDiar = (Diar) bundle.getSerializable("diar");
@@ -61,20 +72,7 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
             tvDate.setText(formatDate(Long.parseLong(recieveDiar.getDate())));
             fab.setImageDrawable(getResources().getDrawable(R.mipmap.ic_pencil));
             fab.setVisibility(View.VISIBLE);
-            //action = false;
         } else tvDate.setText(formatDate(System.currentTimeMillis()));
-
-        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        activity.setSupportActionBar(toolbar);
-        setHasOptionsMenu(true);
-        toolbar.setTitle("Add");
-        toolbar.setOnMenuItemClickListener(this);
-
-        DrawerLayout dl = (DrawerLayout) getActivity().findViewById(R.id.drawerlayout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(getActivity(), dl, toolbar, R.string.nav_open, R.string.nav_close);
-        dl.setDrawerListener(toggle);
-        toggle.syncState();
 
         return view;
     }
@@ -159,5 +157,25 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
     public String formatDate(long l) {
         SimpleDateFormat form = new SimpleDateFormat("dd.MM.yyyy kk:mm");
         return form.format(l);
+    }
+    public void drawableToggle() {
+        dl = (DrawerLayout) getActivity().findViewById(R.id.drawerlayout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(getActivity(), dl, toolbar, R.string.nav_open, R.string.nav_close) {
+            @Override
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+            }
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                hideKeyBoard();
+                super.onDrawerOpened(drawerView);
+            }
+        };
+        dl.setDrawerListener(toggle);
+        toggle.syncState();
+    }
+    public void hideKeyBoard() {
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 }

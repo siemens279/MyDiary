@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "7319763436",
+    "firebase_url": "https://mydiary-1e001.firebaseio.com",
+    "project_id": "mydiary-1e001",
+    "storage_bucket": "mydiary-1e001.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:7319763436:android:cfc93bbb9fa7538a",
+        "android_client_info": {
+          "package_name": "com.a279.siemens.mydiary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "7319763436-ap37o9eg3sjbhnli556f1pv2qqqho6t6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.a279.siemens.mydiary",
+            "certificate_hash": "97f2c74ff8972c04f99125262e35599eb003fd09"
+          }
+        },
+        {
+          "client_id": "7319763436-gngvf1tsu8rdgjijd6v9runhm2kbeaeh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCP4POzlOr81TvsZ_UYjGcQdZdIyeo02mo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "7319763436-gngvf1tsu8rdgjijd6v9runhm2kbeaeh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

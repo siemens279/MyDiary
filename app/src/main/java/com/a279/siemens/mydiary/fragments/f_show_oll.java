@@ -1,5 +1,6 @@
 package com.a279.siemens.mydiary.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,11 +25,23 @@ import android.widget.Toast;
 import com.a279.siemens.mydiary.Diar;
 import com.a279.siemens.mydiary.MyDBHelper;
 import com.a279.siemens.mydiary.R;
+import com.a279.siemens.mydiary.User;
 import com.a279.siemens.mydiary.adapters.ShowOllAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class f_show_oll extends Fragment {
 
@@ -40,20 +54,17 @@ public class f_show_oll extends Fragment {
     LinearLayout llIn, llOut;
     TextView textSingIn, textRegistration, textInName, textInEmail, textInOut;
     DrawerLayout dl;
+    Toolbar toolbar;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.f_show_oll, container, false);
-        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
         setHasOptionsMenu(true);
-
-        dl = (DrawerLayout) getActivity().findViewById(R.id.drawerlayout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(getActivity(), dl, toolbar, R.string.nav_open, R.string.nav_close);
-        dl.setDrawerListener(toggle);
-        toggle.syncState();
+        drawableToggle();
 
         NavigationView nv = (NavigationView) getActivity().findViewById(R.id.navigation);
         View header = nv.getHeaderView(0);
@@ -71,16 +82,16 @@ public class f_show_oll extends Fragment {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    Log.d("MyLog", "onAuthStateChanged:signed_in:" + user.getUid());
+                    //Log.d("MyLog", "onAuthStateChanged:signed_in:" + user.getUid());
                     llIn.setVisibility(View.INVISIBLE);
                     llOut.setVisibility(View.VISIBLE);
+                    getName();
                     textInEmail.setText(user.getEmail());
                 } else {
-                    Log.d("MyLog", "onAuthStateChanged:signed_out");
+                    //Log.d("MyLog", "onAuthStateChanged:signed_out");
                     llOut.setVisibility(View.INVISIBLE);
                     llIn.setVisibility(View.VISIBLE);
                 }
-                // ...
             }
         };
         mAuth.addAuthStateListener(mAuthListener);
@@ -103,7 +114,6 @@ public class f_show_oll extends Fragment {
             @Override
             public void onClick(View v) {
                 dl.closeDrawers();
-                //setFragment(f_registration.class, null);
                 mAuth.signOut();
                 Toast.makeText(getContext(), "Вы успешно вышли", Toast.LENGTH_SHORT).show();
                 llOut.setVisibility(View.INVISIBLE);
@@ -131,6 +141,24 @@ public class f_show_oll extends Fragment {
         rv.setAdapter(adapter);
         return view;
     }
+    public void getName() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference();
+        FirebaseUser user = mAuth.getInstance().getCurrentUser();
+        Query myTopPostsQuery = myRef.child("users").child(user.getUid());
+        myTopPostsQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User u = dataSnapshot.getValue(User.class);
+                //Log.d("MyLog", "Result:"+u.getName());
+                if (u != null) textInName.setText(u.getName());
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("MyLog", "Error");
+            }
+        });
+    }
     public void setFragment(Class clas, Bundle bundle) {
         Fragment fragment = null;
         try {
@@ -147,5 +175,25 @@ public class f_show_oll extends Fragment {
             transaction.addToBackStack(null);
             transaction.commit();
         }
+    }
+    public void drawableToggle() {
+        dl = (DrawerLayout) getActivity().findViewById(R.id.drawerlayout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(getActivity(), dl, toolbar, R.string.nav_open, R.string.nav_close) {
+            @Override
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+            }
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                hideKeyBoard();
+                super.onDrawerOpened(drawerView);
+            }
+        };
+        dl.setDrawerListener(toggle);
+        toggle.syncState();
+    }
+    public void hideKeyBoard() {
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 }

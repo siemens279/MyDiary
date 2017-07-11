@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imageViewAvatar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/no_foto_avatar" />
+
+    <EditText
+        android:id="@+id/editTextAccauntName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@color/mWhite"
+        android:ems="10"
+        android:hint="Имя"
+        android:inputType="textPersonName"
+        android:padding="5dp"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/editTextAccauntFam"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@color/mWhite"
+        android:ems="10"
+        android:hint="Фамилия"
+        android:inputType="textPersonName"
+        android:padding="5dp"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/editTextAccauntAge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@color/mWhite"
+        android:ems="10"
+        android:hint="Возраст"
+        android:inputType="textPersonName"
+        android:padding="5dp"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/buttonSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Сохранить" />
+
+</LinearLayout>
