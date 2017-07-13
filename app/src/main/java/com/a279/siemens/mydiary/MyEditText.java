@@ -19,9 +19,11 @@ public class MyEditText extends android.support.v7.widget.AppCompatEditText{
     int w = 0;
     int h = 0;
     int hie = 0;
+    float tSize = 0;
 
     public MyEditText(Context context) {
         super(context);
+        //setTextSize(30);
         init(context);
     }
     public MyEditText(Context context, AttributeSet attrs) {
@@ -35,6 +37,7 @@ public class MyEditText extends android.support.v7.widget.AppCompatEditText{
 
     private void init(Context context) {
         //do stuff that was in your original constructor...
+        tSize = getTextSize();
         p=new Paint();
     }
 
@@ -43,13 +46,24 @@ public class MyEditText extends android.support.v7.widget.AppCompatEditText{
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         w = widthMeasureSpec;
         h = heightMeasureSpec;
+        //Log.d("MyLog", ""+w+"="+h);
     }
 
     @Override
     public float getTextSize() {
         float f = super.getTextSize();
-        Log.d("MyLog", ""+String.valueOf(f));
+        //Log.d("MyLog", "1:"+String.valueOf(f));
         return f;
+    }
+
+    @Override
+    public int getLineHeight() {
+        return super.getLineHeight();
+    }
+
+    @Override
+    public int getLineCount() {
+        return super.getLineCount();
     }
 
     @Override
@@ -61,15 +75,19 @@ public class MyEditText extends android.support.v7.widget.AppCompatEditText{
 //        canvas.drawLine(100,100,300,300,p);
 
         //if ()
+        Log.d("MyLog", "--------------------");
+        Log.d("MyLog", "height:"+getLineHeight());
+        Log.d("MyLog", "count:"+getLineCount());
 
         Paint mPaint = new Paint();
-        mPaint.setColor(Color.BLACK);
-        mPaint.setStrokeWidth(2);
+        mPaint.setColor(Color.parseColor("#808080"));//Color.BLACK);
+        mPaint.setStrokeWidth(1);
 
-        //mPaint.setTextSize(15);
+        //mPaint.setTextSize(10);
 
-        canvas.drawLine(0, 50, w, 50, mPaint);
-        for (int i=95;i<450;i=i+45) {
+
+        //canvas.drawLine(0, 50, w, 50, mPaint);
+        for (int i=42;i<h/42;i=i+42) {
             canvas.drawLine(0, i, w, i, mPaint);
 //            canvas.drawLine(0, 30, w, 30, mPaint);
 //            canvas.drawLine(0, 45, w, 45, mPaint);

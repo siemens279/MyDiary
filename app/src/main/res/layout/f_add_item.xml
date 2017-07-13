@@ -44,8 +44,9 @@
         <com.a279.siemens.mydiary.MyEditText
             android:id="@+id/editTextText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/holo_orange_light"
+            android:layout_height="match_parent"
+            android:background="#fff597"
+            android:gravity="top"
             android:inputType="textMultiLine" />
 
     </LinearLayout>
