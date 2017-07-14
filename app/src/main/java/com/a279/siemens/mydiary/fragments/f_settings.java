@@ -38,7 +38,7 @@ public class f_settings extends Fragment {
     DrawerLayout dl;
     Toolbar toolbar;
     MyDBHelper db;
-    ImageView synk;
+    ImageView syncToServer, syncDownload;
     FirebaseAuth myAuth;
     DatabaseReference myRef;
     FirebaseDatabase myFirebase;
@@ -61,10 +61,9 @@ public class f_settings extends Fragment {
         user = myAuth.getCurrentUser();
         db = new MyDBHelper(getContext());
         diars = new ArrayList<>(db.getAllDiar());
-        loadDiar();
 
-        synk = (ImageView) view.findViewById(R.id.imageSyncToServer);
-        synk.setOnClickListener(new View.OnClickListener() {
+        syncToServer = (ImageView) view.findViewById(R.id.imageSyncToServer);
+        syncToServer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (user != null) {
@@ -92,6 +91,13 @@ public class f_settings extends Fragment {
                 }
             }
         });
+        syncDownload = (ImageView) view.findViewById(R.id.imageSyncDownload);
+        syncDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadDiar();
+            }
+        });
 
         return view;
     }
@@ -108,12 +114,18 @@ public class f_settings extends Fragment {
         myQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                int count = 0;
                 for (DataSnapshot child: dataSnapshot.getChildren()) {
                     Diar diar = child.getValue(Diar.class);
                     if (diar != null) {
-                        Log.d("MyLog", "----:"+diar.getTema());
+                        if (!db.findDiarById(diar.getId())) {
+                            //Log.d("MyLog", "----:"+diar.getTema());
+                            db.addDiar(diar);
+                            count++;
+                        } //else Log.d("MyLog", "--yes in db--:"+diar.getTema());
                     }
                 }
+                Toast.makeText(getContext(), "Загружено: "+count, Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
