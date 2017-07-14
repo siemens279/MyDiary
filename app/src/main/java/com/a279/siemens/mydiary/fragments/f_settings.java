@@ -61,8 +61,9 @@ public class f_settings extends Fragment {
         user = myAuth.getCurrentUser();
         db = new MyDBHelper(getContext());
         diars = new ArrayList<>(db.getAllDiar());
+        loadDiar();
 
-        synk = (ImageView) view.findViewById(R.id.imageSync);
+        synk = (ImageView) view.findViewById(R.id.imageSyncToServer);
         synk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,7 +86,6 @@ public class f_settings extends Fragment {
 //                    });
                     for (int i = 0; i < diars.size(); i++) {
                         saveDiar(diars.get(i));
-                        Log.d("MyLog", "diar:"+diars.get(i).getTema());
                     }
                 } else {
                     Toast.makeText(getContext(),"Войдите или зарегистрируйтесь", Toast.LENGTH_SHORT).show();
@@ -102,6 +102,24 @@ public class f_settings extends Fragment {
             childUpdates.put(diar.getId().toString(), postValues);
             myRef.child(user.getUid()).updateChildren(childUpdates);
         }
+    }
+    public void loadDiar() {
+        Query myQuery = myRef.child(user.getUid());
+        myQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot child: dataSnapshot.getChildren()) {
+                    Diar diar = child.getValue(Diar.class);
+                    if (diar != null) {
+                        Log.d("MyLog", "----:"+diar.getTema());
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("MyLog", "Error");
+            }
+        });
     }
     public void drawableToggle() {
         dl = (DrawerLayout) getActivity().findViewById(R.id.drawerlayout);
