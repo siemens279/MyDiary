@@ -2,6 +2,8 @@ package com.a279.siemens.mydiary;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Diar implements Serializable {
 
@@ -17,6 +19,15 @@ public class Diar implements Serializable {
         this.tema = tema;
         this.text = text;
         this.date = date;
+    }
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("id", id);
+        result.put("tema", tema);
+        result.put("text", text);
+        result.put("date", date);
+        return result;
     }
 
     public Integer getId() {
