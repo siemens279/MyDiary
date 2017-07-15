@@ -1,6 +1,7 @@
 package com.a279.siemens.mydiary.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -114,10 +116,26 @@ public class f_show_oll extends Fragment {
             @Override
             public void onClick(View v) {
                 dl.closeDrawers();
-                mAuth.signOut();
-                Toast.makeText(getContext(), "Вы успешно вышли", Toast.LENGTH_SHORT).show();
-                llOut.setVisibility(View.INVISIBLE);
-                llIn.setVisibility(View.VISIBLE);
+                AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
+                b.setTitle("Выйти с аккаунта").setCancelable(true)
+                        .setMessage("Вы действительно хотите выйти с аккаунта?")
+                        .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                mAuth.signOut();
+                                Toast.makeText(getContext(), "Вы успешно вышли", Toast.LENGTH_SHORT).show();
+                                llOut.setVisibility(View.INVISIBLE);
+                                llIn.setVisibility(View.VISIBLE);
+                            }
+                        })
+                        .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        });
+                AlertDialog alert = b.create();
+                alert.show();
             }
         });
 

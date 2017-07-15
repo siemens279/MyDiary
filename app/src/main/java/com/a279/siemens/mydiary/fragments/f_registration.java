@@ -71,7 +71,7 @@ public class f_registration extends Fragment{
                                     setUserProfile();
                                     setFragment(f_show_oll.class, null);
                                 } else {
-                                    Toast.makeText(getContext(), "Ошибка регистрации", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), "Ошибка регистрации: "+task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                     Log.d("MyLog", task.getException().getMessage());
                                 }
                             }

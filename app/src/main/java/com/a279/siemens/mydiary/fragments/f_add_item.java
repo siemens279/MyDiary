@@ -3,7 +3,11 @@ package com.a279.siemens.mydiary.fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -24,6 +28,8 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +38,11 @@ import com.a279.siemens.mydiary.MainActivity;
 import com.a279.siemens.mydiary.MyDBHelper;
 import com.a279.siemens.mydiary.R;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+
+import static android.app.Activity.RESULT_OK;
 
 public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListener {
 
@@ -45,6 +55,10 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
     Bundle bundle;
     DrawerLayout dl;
     Toolbar toolbar;
+    LinearLayout llAdd;
+
+    private ImageView image;
+    private static final int REQUEST = 1;
 
     @Nullable
     @Override
@@ -55,6 +69,7 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
         etText = (EditText) view.findViewById(R.id.editTextText);
         tvDate = (TextView) view.findViewById(R.id.textViewDate);
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        llAdd = (LinearLayout) view.findViewById(R.id.linearlayoutAddImage);
 
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -74,7 +89,54 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
             fab.setVisibility(View.VISIBLE);
         } else tvDate.setText(formatDate(System.currentTimeMillis()));
 
+        //image = (ImageView) view.findViewById(R.id.imageView2);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_PICK);
+                i.setType("image/*");
+                startActivityForResult(i, REQUEST);
+                //addView();
+            }
+        });
+
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        Bitmap img = null;
+        if (requestCode == REQUEST && resultCode == RESULT_OK) {
+            Uri selectedImage = data.getData();
+            try {
+                img = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), selectedImage);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ImageView iv = new ImageView(getContext());
+            //iv.setMinimumWidth(100);
+            //iv.setMinimumWidth(200);
+            iv.setMaxHeight(70);
+            iv.setMaxWidth(100);
+            llAdd.addView(iv);
+            iv.setImageBitmap(img);
+            iv.setMaxHeight(70);
+            iv.setMaxWidth(100);
+
+            ImageView iv2 = new ImageView(getContext());
+            iv2.setMinimumWidth(50);
+            iv2.setMinimumHeight(50);
+            iv2.setBackgroundColor(Color.GREEN);
+            iv2.setBackground(getResources().getDrawable(R.drawable.background_sing));
+            llAdd.addView(iv2);
+            iv2.setMaxHeight(70);
+            iv2.setMaxWidth(100);
+
+
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -105,9 +167,13 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
                         Toast.makeText(getContext(), "Запись обновлена", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    db.addDiar(diar);
-                    setFragment(f_show_oll.class, null);
-                    Toast.makeText(getContext(), "Запись сохранена", Toast.LENGTH_SHORT).show();
+                    if (etTema.getText().length()>0) {
+                        if (etText.getText().length()>0) {
+                            db.addDiar(diar);
+                            setFragment(f_show_oll.class, null);
+                            Toast.makeText(getContext(), "Запись сохранена", Toast.LENGTH_SHORT).show();
+                        } else Toast.makeText(getContext(), "Запись пустая", Toast.LENGTH_SHORT).show();
+                    } else Toast.makeText(getContext(), "Введите тему", Toast.LENGTH_SHORT).show();
                 }
                 return true;
             case R.id.mSettings:

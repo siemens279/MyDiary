@@ -86,6 +86,7 @@ public class f_settings extends Fragment {
                     for (int i = 0; i < diars.size(); i++) {
                         saveDiar(diars.get(i));
                     }
+                    Toast.makeText(getContext(), "Записи сохранены", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(),"Войдите или зарегистрируйтесь", Toast.LENGTH_SHORT).show();
                 }
@@ -110,28 +111,31 @@ public class f_settings extends Fragment {
         }
     }
     public void loadDiar() {
-        Query myQuery = myRef.child(user.getUid());
-        myQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                int count = 0;
-                for (DataSnapshot child: dataSnapshot.getChildren()) {
-                    Diar diar = child.getValue(Diar.class);
-                    if (diar != null) {
-                        if (!db.findDiarById(diar.getId())) {
-                            //Log.d("MyLog", "----:"+diar.getTema());
-                            db.addDiar(diar);
-                            count++;
-                        } //else Log.d("MyLog", "--yes in db--:"+diar.getTema());
+        if (user!=null) {
+            Query myQuery = myRef.child(user.getUid());
+            myQuery.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    int count = 0;
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        Diar diar = child.getValue(Diar.class);
+                        if (diar != null) {
+                            if (!db.findDiarById(diar.getId())) {
+                                db.addDiar(diar);
+                                count++;
+                            }
+                        }
                     }
+                    Toast.makeText(getContext(), "Загружено: " + count, Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(getContext(), "Загружено: "+count, Toast.LENGTH_SHORT).show();
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("MyLog", "Error");
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.d("MyLog", "Error");
+                }
+            });
+        } else {
+            Toast.makeText(getContext(),"Войдите или зарегистрируйтесь", Toast.LENGTH_SHORT).show();
+        }
     }
     public void drawableToggle() {
         dl = (DrawerLayout) getActivity().findViewById(R.id.drawerlayout);
