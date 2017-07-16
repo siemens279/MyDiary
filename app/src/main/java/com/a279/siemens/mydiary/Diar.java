@@ -2,6 +2,7 @@ package com.a279.siemens.mydiary;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,14 +12,16 @@ public class Diar implements Serializable {
     public String tema;
     public String text;
     public String date;
+    public ArrayList<String> imgArray = new ArrayList<>();
 
     public Diar() {}
 
-    public Diar(Integer id, String tema, String text, String date) {
+    public Diar(Integer id, String tema, String text, String date, ArrayList<String> array) {
         this.id = id;
         this.tema = tema;
         this.text = text;
         this.date = date;
+        this.imgArray = array;
     }
 
     public Map<String, Object> toMap() {
@@ -27,7 +30,16 @@ public class Diar implements Serializable {
         result.put("tema", tema);
         result.put("text", text);
         result.put("date", date);
+        result.put("img", imgArray);
         return result;
+    }
+
+    public ArrayList<String> getImgArray() {
+        return imgArray;
+    }
+
+    public void setImgArray(ArrayList<String> imgArray) {
+        this.imgArray = imgArray;
     }
 
     public Integer getId() {

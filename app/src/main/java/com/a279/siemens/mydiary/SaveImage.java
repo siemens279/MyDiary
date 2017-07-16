@@ -9,6 +9,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,6 +19,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -26,9 +28,35 @@ public class SaveImage {
 
     public Context context;
     public String DIR_SD = "MyDiar";
-
     public SaveImage(Context con) {
         context = con;
+    }
+
+    public void save(Bitmap bitmap, String name) {
+        try {
+            //открываем файл в приватном каталоге нашей аппы
+            OutputStream stream = context.openFileOutput(name, MODE_PRIVATE);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);// пишем битмап на PNG с качеством 70%
+            //Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            stream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public Bitmap load(String name) {
+        Bitmap bmp = null;
+        try {
+            File file = new File(context.getFilesDir(), name); //+".png"
+            InputStream is = new BufferedInputStream(new FileInputStream(file));
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(is);
+            bmp = BitmapFactory.decodeStream(bufferedInputStream);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return bmp;
+    }
+    public void delete(String name) {
+        context.deleteFile(name);
     }
 
     public void writeFile(String FILENAME, Bitmap bitmap) {
@@ -45,7 +73,6 @@ public class SaveImage {
             e.printStackTrace();
         }
     }
-
     public void readFile(String FILENAME) {
 
         try {
@@ -71,7 +98,6 @@ public class SaveImage {
 //            e.printStackTrace();
 //        }
     }
-
     public void writeFileSD(String FILENAME_SD) {
         // проверяем доступность SD
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {

@@ -42,6 +42,8 @@ import com.a279.siemens.mydiary.SaveImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -58,6 +60,9 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
     Toolbar toolbar;
     LinearLayout llAdd;
     Button bAddImage;
+    LinearLayout.LayoutParams lpView;
+    SaveImage si;
+    public ArrayList<String> imgArray = new ArrayList<>();
 
     private ImageView image;
     private static final int REQUEST = 1;
@@ -81,6 +86,10 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
         toolbar.setOnMenuItemClickListener(this);
         drawableToggle();
 
+        lpView = new LinearLayout.LayoutParams(200, LinearLayout.LayoutParams.MATCH_PARENT);
+        lpView.leftMargin = 5;
+        si = new SaveImage(getContext());
+
         bundle = getArguments();
         if (bundle != null) {
             recieveDiar = (Diar) bundle.getSerializable("diar");
@@ -89,6 +98,15 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
             tvDate.setText(formatDate(Long.parseLong(recieveDiar.getDate())));
             //fab.setImageDrawable(getResources().getDrawable(R.mipmap.ic_pencil));
             //fab.setVisibility(View.VISIBLE);
+            if (recieveDiar.getImgArray()!=null) {
+                //Log.d("MyLog", "image in bd:"+recieveDiar.getImgArray().size());
+                for (int i=0; i<recieveDiar.getImgArray().size(); i++) {
+                    ImageView iv = new ImageView(getContext());
+                    llAdd.addView(iv, lpView);
+                    iv.setImageBitmap(si.load(recieveDiar.getImgArray().get(i)));
+                    imgArray = recieveDiar.getImgArray();
+                }
+            } //else Log.d("MyLog", "No image in bd");
         } else tvDate.setText(formatDate(System.currentTimeMillis()));
 
         //image = (ImageView) view.findViewById(R.id.imageView2);
@@ -117,18 +135,18 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            LinearLayout.LayoutParams lpView = new LinearLayout.LayoutParams(200, LinearLayout.LayoutParams.MATCH_PARENT);
-            lpView.leftMargin = 5;
             ImageView iv = new ImageView(getContext());
             llAdd.addView(iv, lpView);
             iv.setImageBitmap(img);
-            SaveImage si = new SaveImage(getContext());
-            si.writeFile("123", img);
- //           si.readFile("123");
+
+            long date = System.currentTimeMillis();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddkkmmss");
+            String name = sdf.format(date);
+            si.save(img, name);
+            imgArray.add(name);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
@@ -149,6 +167,12 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
                 diar.setTema(etTema.getText().toString());
                 diar.setText(etText.getText().toString());
                 diar.setDate(String.valueOf(System.currentTimeMillis()));
+//                if (imgArray!=null) {
+//                    for (int i=0;i<imgArray.size();i++) {
+//                        Log.d("MyLog", "image"+i+" :"+imgArray.get(i));
+//                    }
+//                }
+                diar.setImgArray(imgArray);
                 if (recieveDiar!=null) {
                     if(db.findDiarById(recieveDiar.getId())) {
                         diar.setId(recieveDiar.getId());
@@ -179,6 +203,13 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
                                 db.deleteDiar(recieveDiar);
                                 Toast.makeText(getContext(), "Запись удалена", Toast.LENGTH_SHORT).show();
                                 setFragment(f_show_oll.class, null);
+
+                                if (recieveDiar.getImgArray()!=null) {
+                                    for (int i2=0; i2<recieveDiar.getImgArray().size(); i2++) {
+                                        si.delete(recieveDiar.getImgArray().get(i2));
+                                        Log.d("MyLog", "Delete "+i2);
+                                    }
+                                } //else Log.d("MyLog", "No image in bd");
                             }
                         })
                         .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
