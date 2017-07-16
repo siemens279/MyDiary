@@ -5,15 +5,15 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="@dimen/fab_margin"
-        android:layout_marginRight="@dimen/fab_margin"
-        android:src="@mipmap/ic_plus"
-        android:visibility="invisible" />
+    <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/fab"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="bottom|end"-->
+        <!--android:layout_marginBottom="@dimen/fab_margin"-->
+        <!--android:layout_marginRight="@dimen/fab_margin"-->
+        <!--android:src="@mipmap/ic_plus"-->
+        <!--android:visibility="invisible" />-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -56,20 +56,37 @@
             android:id="@+id/editTextText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:background="#fff597"
             android:gravity="top"
-            android:inputType="textMultiLine" />
+            android:inputType="textMultiLine"
+            android:minHeight="179dp" />
 
-        <HorizontalScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp">
+            android:layout_height="70dp"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:id="@+id/linearlayoutAddImage"
+            <Button
+                android:id="@+id/buttonAddImage"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:orientation="horizontal" />
-        </HorizontalScrollView>
+                android:background="@color/mWhite"
+                android:text="Добавить\nфото"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textStyle="italic" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/linearlayoutAddImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
+        </LinearLayout>
 
     </LinearLayout>
 

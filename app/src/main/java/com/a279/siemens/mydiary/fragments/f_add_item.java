@@ -37,6 +37,7 @@ import com.a279.siemens.mydiary.Diar;
 import com.a279.siemens.mydiary.MainActivity;
 import com.a279.siemens.mydiary.MyDBHelper;
 import com.a279.siemens.mydiary.R;
+import com.a279.siemens.mydiary.SaveImage;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -49,13 +50,14 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
     EditText etTema, etText;
     TextView tvDate;
     MyDBHelper db;
-    FloatingActionButton fab;
+    //FloatingActionButton fab;
     MenuItem addMenuItem, saveMenuItem, settingsMenuItem, deleteMenuItem;
     Diar recieveDiar = null;
     Bundle bundle;
     DrawerLayout dl;
     Toolbar toolbar;
     LinearLayout llAdd;
+    Button bAddImage;
 
     private ImageView image;
     private static final int REQUEST = 1;
@@ -68,7 +70,7 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
         etTema = (EditText) view.findViewById(R.id.editTextTema);
         etText = (EditText) view.findViewById(R.id.editTextText);
         tvDate = (TextView) view.findViewById(R.id.textViewDate);
-        fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        //fab = (FloatingActionButton) view.findViewById(R.id.fab);
         llAdd = (LinearLayout) view.findViewById(R.id.linearlayoutAddImage);
 
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
@@ -85,18 +87,18 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
             etTema.setText(recieveDiar.getTema());
             etText.setText(recieveDiar.getText());
             tvDate.setText(formatDate(Long.parseLong(recieveDiar.getDate())));
-            fab.setImageDrawable(getResources().getDrawable(R.mipmap.ic_pencil));
-            fab.setVisibility(View.VISIBLE);
+            //fab.setImageDrawable(getResources().getDrawable(R.mipmap.ic_pencil));
+            //fab.setVisibility(View.VISIBLE);
         } else tvDate.setText(formatDate(System.currentTimeMillis()));
 
         //image = (ImageView) view.findViewById(R.id.imageView2);
-        fab.setOnClickListener(new View.OnClickListener() {
+        bAddImage = (Button) view.findViewById(R.id.buttonAddImage);
+        bAddImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_PICK);
                 i.setType("image/*");
                 startActivityForResult(i, REQUEST);
-                //addView();
             }
         });
 
@@ -115,26 +117,14 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            LinearLayout.LayoutParams lpView = new LinearLayout.LayoutParams(200, LinearLayout.LayoutParams.MATCH_PARENT);
+            lpView.leftMargin = 5;
             ImageView iv = new ImageView(getContext());
-            //iv.setMinimumWidth(100);
-            //iv.setMinimumWidth(200);
-            iv.setMaxHeight(70);
-            iv.setMaxWidth(100);
-            llAdd.addView(iv);
+            llAdd.addView(iv, lpView);
             iv.setImageBitmap(img);
-            iv.setMaxHeight(70);
-            iv.setMaxWidth(100);
-
-            ImageView iv2 = new ImageView(getContext());
-            iv2.setMinimumWidth(50);
-            iv2.setMinimumHeight(50);
-            iv2.setBackgroundColor(Color.GREEN);
-            iv2.setBackground(getResources().getDrawable(R.drawable.background_sing));
-            llAdd.addView(iv2);
-            iv2.setMaxHeight(70);
-            iv2.setMaxWidth(100);
-
-
+            SaveImage si = new SaveImage(getContext());
+            si.writeFile("123", img);
+ //           si.readFile("123");
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
