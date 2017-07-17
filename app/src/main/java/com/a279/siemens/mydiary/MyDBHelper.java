@@ -15,7 +15,7 @@ import java.util.List;
 
 public class MyDBHelper extends SQLiteOpenHelper {
 
-    private static final Integer DATABASE_VERSION = 2;
+    private static final Integer DATABASE_VERSION = 3;
     private static final String DATABASE_NAME = "Diary";
 
     private static final String TABLE_DIARY = "Diary";
@@ -31,7 +31,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String CREATE_DIARY_TABLE = "CREATE TABLE " + TABLE_DIARY + "("
-                + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + KEY_ID + " TEXT PRIMARY KEY," //AUTOINCREMENT,"
                 + KEY_TEMA + " TEXT,"
                 + KEY_TEXT + " TEXT,"
                 + KEY_DATE + " TEXT,"
@@ -61,7 +61,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
         if (cursor != null){
             cursor.moveToFirst();
         }
-        Diar drug = new Diar(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3) , decode(cursor.getString(4)));
+        Diar drug = new Diar(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3) , decode(cursor.getString(4)));
         return drug;
     }
     public ArrayList<Diar> getAllDiar() {
@@ -73,7 +73,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Diar diar = new Diar();
-                diar.setId(cursor.getInt(0));
+                diar.setId(cursor.getString(0));
                 diar.setTema(cursor.getString(1));
                 diar.setText(cursor.getString(2));
                 diar.setDate(cursor.getString(3));
@@ -110,7 +110,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Diar diar = new Diar();
-                diar.setId(cursor.getInt(0));
+                diar.setId(cursor.getString(0));
                 diar.setTema(cursor.getString(1));
                 diar.setText(cursor.getString(2));
                 diar.setDate(cursor.getString(3));
@@ -121,7 +121,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
         db.close();
         return diarList;
     }
-    public Boolean findDiarById(Integer id) {
+    public Boolean findDiarById(String id) {
         String selectQuery = "SELECT * FROM " +TABLE_DIARY +" WHERE "+KEY_ID+" = "+id; //+" ORDER BY name ASC"; //+ clients WHERE client_data LIKE '%Mark%' ORDER BY `client_id` ASC
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);

@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class Diar implements Serializable {
 
-    public Integer id;
+    public String id;
     public String tema;
     public String text;
     public String date;
@@ -16,7 +16,7 @@ public class Diar implements Serializable {
 
     public Diar() {}
 
-    public Diar(Integer id, String tema, String text, String date, ArrayList<String> array) {
+    public Diar(String id, String tema, String text, String date, ArrayList<String> array) {
         this.id = id;
         this.tema = tema;
         this.text = text;
@@ -42,11 +42,11 @@ public class Diar implements Serializable {
         this.imgArray = imgArray;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

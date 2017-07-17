@@ -1,7 +1,9 @@
 package com.a279.siemens.mydiary.fragments;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
@@ -20,15 +22,23 @@ import com.a279.siemens.mydiary.Diar;
 import com.a279.siemens.mydiary.MyDBHelper;
 import com.a279.siemens.mydiary.R;
 import com.a279.siemens.mydiary.User;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +54,7 @@ public class f_settings extends Fragment {
     FirebaseDatabase myFirebase;
     FirebaseUser user;
     ArrayList<Diar> diars;
+    private StorageReference mStorageRef;
 
     @Nullable
     @Override
@@ -59,6 +70,7 @@ public class f_settings extends Fragment {
         myFirebase = FirebaseDatabase.getInstance();
         myRef = myFirebase.getReference("diars");
         user = myAuth.getCurrentUser();
+        mStorageRef = FirebaseStorage.getInstance().getReference();
         db = new MyDBHelper(getContext());
         diars = new ArrayList<>(db.getAllDiar());
 
@@ -75,7 +87,6 @@ public class f_settings extends Fragment {
 //                            for (DataSnapshot child: dataSnapshot.getChildren()) {
 //                                Diar diar = child
 //                            }
-//
 //                            for (int i = 0; i < diars.size(); i++) {
 //                            }
 //                        }
@@ -83,7 +94,9 @@ public class f_settings extends Fragment {
 //                        public void onCancelled(DatabaseError databaseError) {
 //                            Log.d("MyLog", "onCancelled");}
 //                    });
+                    //Log.d("MyLog", "Oll diars:"+diars.size());
                     for (int i = 0; i < diars.size(); i++) {
+                        //Log.d("MyLog", "-------------------------load diar "+i);
                         saveDiar(diars.get(i));
                     }
                     Toast.makeText(getContext(), "Записи сохранены", Toast.LENGTH_SHORT).show();
@@ -106,8 +119,24 @@ public class f_settings extends Fragment {
         if (user != null) {
             Map<String, Object> postValues = diar.toMap();
             Map<String, Object> childUpdates = new HashMap<>();
-            childUpdates.put(diar.getId().toString(), postValues);
+            childUpdates.put(diar.getId(), postValues);
             myRef.child(user.getUid()).updateChildren(childUpdates);
+            if (diar.getImgArray()!=null) {
+                //Log.d("MyLog", "image in diar: "+diar.getImgArray().size());
+                for (int i=0;i<diar.getImgArray().size();i++) {
+                    Uri file = Uri.fromFile(new File(getContext().getFilesDir(), diar.getImgArray().get(i)));
+                    StorageReference storageRef = mStorageRef.child("images/"+user.getUid()+"/"+diar.getId()+"/"+diar.getImgArray().get(i));
+                    UploadTask uploadTask = storageRef.putFile(file);
+                    // устанавливаем слушатель и получаем снэпшот с информацией
+                    uploadTask.addOnProgressListener(new OnProgressListener() {
+                        @Override
+                        public void onProgress(Object o) {
+                            UploadTask.TaskSnapshot snapshot = (UploadTask.TaskSnapshot) o;
+                            //Log.d("MyLog", snapshot.toString());
+                        }
+                    });
+                }
+            }
         }
     }
     public void loadDiar() {
@@ -120,6 +149,9 @@ public class f_settings extends Fragment {
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         Diar diar = child.getValue(Diar.class);
                         if (diar != null) {
+                            GenericTypeIndicator<ArrayList<String>> t = new GenericTypeIndicator<ArrayList<String>>() {};
+                            ArrayList<String> yourStringArray = child.child("img").getValue(t);
+                            diar.setImgArray(yourStringArray);
                             if (!db.findDiarById(diar.getId())) {
                                 db.addDiar(diar);
                                 count++;
@@ -127,6 +159,7 @@ public class f_settings extends Fragment {
                         }
                     }
                     Toast.makeText(getContext(), "Загружено: " + count, Toast.LENGTH_SHORT).show();
+                    loadImageFromServer();
                 }
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
@@ -136,6 +169,33 @@ public class f_settings extends Fragment {
         } else {
             Toast.makeText(getContext(),"Войдите или зарегистрируйтесь", Toast.LENGTH_SHORT).show();
         }
+    }
+    public void loadImageFromServer() {
+        ArrayList<Diar> diarList = new ArrayList<>(db.getAllDiar());
+        if (diarList != null) {
+            for (int i=0;i<diarList.size();i++) {
+                if (diarList.get(i).getImgArray()!=null) {
+                    for (int y=0;y<diarList.get(i).getImgArray().size();y++) {
+                        StorageReference mountainsRef = mStorageRef.child("images/" + user.getUid() + "/" + diarList.get(i).getId() + "/" + diarList.get(i).getImgArray().get(y));
+                        Log.d("MyLog", "-"+ mountainsRef.getPath());
+                        // вызываем метод getDownloadUrl на файл и устаналиваем слушатель (прошло успешно или ошибка)
+                        mountainsRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener() {
+                            @Override
+                            public void onSuccess(Object o) {
+                                Uri uri = (Uri) o;
+                                // получаем downloadUrl для 'users/me/profile.png'
+                                Log.d("MyLog", "URi: " + uri.toString());
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                Log.d("MyLog", "Ошибка: " + exception);
+                            }
+                        });
+                    }
+                } else Log.d("MyLog", "No Image in this diar");
+            }
+        } else Log.d("MyLog", "Polnaya hren");
     }
     public void drawableToggle() {
         dl = (DrawerLayout) getActivity().findViewById(R.id.drawerlayout);

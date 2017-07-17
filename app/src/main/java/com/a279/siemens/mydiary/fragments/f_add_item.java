@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -38,6 +39,13 @@ import com.a279.siemens.mydiary.MainActivity;
 import com.a279.siemens.mydiary.MyDBHelper;
 import com.a279.siemens.mydiary.R;
 import com.a279.siemens.mydiary.SaveImage;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -139,9 +147,7 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
             llAdd.addView(iv, lpView);
             iv.setImageBitmap(img);
 
-            long date = System.currentTimeMillis();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddkkmmss");
-            String name = sdf.format(date);
+            String name = getDate();
             si.save(img, name);
             imgArray.add(name);
         }
@@ -174,6 +180,7 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
 //                }
                 diar.setImgArray(imgArray);
                 if (recieveDiar!=null) {
+                    diar.setId(recieveDiar.getId());
                     if(db.findDiarById(recieveDiar.getId())) {
                         diar.setId(recieveDiar.getId());
                         db.updateDiarById(diar);
@@ -181,6 +188,7 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
                         Toast.makeText(getContext(), "Запись обновлена", Toast.LENGTH_SHORT).show();
                     }
                 } else {
+                    diar.setId(getDate());
                     if (etTema.getText().length()>0) {
                         if (etText.getText().length()>0) {
                             db.addDiar(diar);
@@ -207,6 +215,7 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
                                 if (recieveDiar.getImgArray()!=null) {
                                     for (int i2=0; i2<recieveDiar.getImgArray().size(); i2++) {
                                         si.delete(recieveDiar.getImgArray().get(i2));
+                                        deleteImageFromServer(recieveDiar, recieveDiar.getImgArray().get(i2));
                                         //Log.d("MyLog", "Delete "+i2);
                                     }
                                 } //else Log.d("MyLog", "No image in bd");
@@ -245,6 +254,11 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
         SimpleDateFormat form = new SimpleDateFormat("dd.MM.yyyy kk:mm");
         return form.format(l);
     }
+    public String getDate() {
+        long date = System.currentTimeMillis();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddkkmmssSSS");
+        return sdf.format(date);
+    }
     public void drawableToggle() {
         dl = (DrawerLayout) getActivity().findViewById(R.id.drawerlayout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(getActivity(), dl, toolbar, R.string.nav_open, R.string.nav_close) {
@@ -264,5 +278,27 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
     public void hideKeyBoard() {
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+    public void deleteImageFromServer(Diar diar, String name) {
+        FirebaseAuth myAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = myAuth.getCurrentUser();
+        if (user != null) {
+            // Create a storage reference from our app
+            StorageReference mStorageRef = FirebaseStorage.getInstance().getReference();
+            // Create a reference to the file to delete
+            StorageReference desertRef = mStorageRef.child("images/"+user.getUid()+"/"+diar.getId()+"/"+name);
+            // Delete the file
+            desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d("MyLog", "File deleted successfully");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Log.d("MyLog", "Uh-oh, an error occurred:---"+exception);
+                }
+            });
+        }
     }
 }
