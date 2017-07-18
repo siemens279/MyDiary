@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.a279.siemens.mydiary.Diar;
 import com.a279.siemens.mydiary.MyDBHelper;
 import com.a279.siemens.mydiary.R;
+import com.a279.siemens.mydiary.SaveImage;
 import com.a279.siemens.mydiary.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -171,13 +172,15 @@ public class f_settings extends Fragment {
         }
     }
     public void loadImageFromServer() {
-        ArrayList<Diar> diarList = new ArrayList<>(db.getAllDiar());
+        final ArrayList<Diar> diarList = new ArrayList<>(db.getAllDiar());
+        final SaveImage si = new SaveImage(getContext());
         if (diarList != null) {
             for (int i=0;i<diarList.size();i++) {
                 if (diarList.get(i).getImgArray()!=null) {
                     for (int y=0;y<diarList.get(i).getImgArray().size();y++) {
+                        final String name = diarList.get(i).getImgArray().get(y);
                         StorageReference mountainsRef = mStorageRef.child("images/" + user.getUid() + "/" + diarList.get(i).getId() + "/" + diarList.get(i).getImgArray().get(y));
-                        Log.d("MyLog", "-"+ mountainsRef.getPath());
+                        //Log.d("MyLog", "-"+ mountainsRef.getPath());
                         // вызываем метод getDownloadUrl на файл и устаналиваем слушатель (прошло успешно или ошибка)
                         mountainsRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener() {
                             @Override
@@ -185,6 +188,8 @@ public class f_settings extends Fragment {
                                 Uri uri = (Uri) o;
                                 // получаем downloadUrl для 'users/me/profile.png'
                                 Log.d("MyLog", "URi: " + uri.toString());
+                                //Log.d("MyLog", "URi: " + uri.getLastPathSegment());
+                                si.saveUri(uri.toString(), name);
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override

@@ -215,7 +215,7 @@ public class f_add_item extends Fragment implements Toolbar.OnMenuItemClickListe
                                 if (recieveDiar.getImgArray()!=null) {
                                     for (int i2=0; i2<recieveDiar.getImgArray().size(); i2++) {
                                         si.delete(recieveDiar.getImgArray().get(i2));
-                                        deleteImageFromServer(recieveDiar, recieveDiar.getImgArray().get(i2));
+                                        //deleteImageFromServer(recieveDiar, recieveDiar.getImgArray().get(i2));
                                         //Log.d("MyLog", "Delete "+i2);
                                     }
                                 } //else Log.d("MyLog", "No image in bd");

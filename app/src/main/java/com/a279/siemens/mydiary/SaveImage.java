@@ -3,7 +3,9 @@ package com.a279.siemens.mydiary;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -21,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.URL;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -58,6 +61,66 @@ public class SaveImage {
     public void delete(String name) {
         context.deleteFile(name);
     }
+
+    public void saveUri(String uri, String name) {
+        MyTask mt = new MyTask();
+        mt.execute(uri, name);
+    }
+
+    class MyTask extends AsyncTask<String, Integer, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //tvInfo.setText("Begin");
+            Log.d("MyLog", "Start load");
+        }
+        @Override
+        protected Void doInBackground(String... urls) {
+            try {
+                //int cnt = 0;
+                //for (String url : urls) {
+                    // загружаем файл
+                Log.d("MyLog", "urls[0]:"+urls[0]);
+                Log.d("MyLog", "urls[1]:"+urls[1]);
+                    downloadFile(urls[0], urls[1]);
+                    // выводим промежуточные результаты
+                    //publishProgress(++cnt);
+                //}
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            //tvInfo.setText("Downloaded " + values[0] + " files");
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            //tvInfo.setText("End");
+            Log.d("MyLog", "End load");
+        }
+
+        private void downloadFile(String url, String name) throws InterruptedException {
+            Bitmap img = null;
+            try {
+                InputStream in = new java.net.URL(url).openStream();
+                img = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.d("MyLog", "Error:"+e.getMessage());
+                //e.printStackTrace();
+            }
+            save(img, name);
+        }
+    }
+
+
+
+
+
 
     public void writeFile(String FILENAME, Bitmap bitmap) {
         File file = new File(Environment.getExternalStoragePublicDirectory("MyDiar"), FILENAME);
